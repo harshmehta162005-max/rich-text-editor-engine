@@ -14,7 +14,6 @@ interface Props {
   addBlock: (currentBlockId: string) => void;
   deleteBlock: (currentBlockId: string) => void;
   updateBlockType: (id: string, type: BlockType) => void;
-  
   onNavigate: (id: string, direction: 'up' | 'down') => void;
 }
 
@@ -31,6 +30,11 @@ const EditableBlockComponent: React.FC<Props> = ({
   const contentRef = useRef<HTMLElement>(null);
   const [showMenu, setShowMenu] = useState(false);
 
+  
+  const [localEmpty, setLocalEmpty] = useState(
+    !block.content || block.content === '<br>' || block.content.trim() === ''
+  );
+
   const plugin = registry.get(block.type) || ParagraphPlugin;
   const Component = plugin.Component;
 
@@ -39,6 +43,8 @@ const EditableBlockComponent: React.FC<Props> = ({
     if (contentRef.current && contentRef.current.innerHTML !== block.content) {
       contentRef.current.innerHTML = block.content;
     }
+    
+    setLocalEmpty(!block.content || block.content === '<br>' || block.content.trim() === '');
   }, [block.content]);
 
   
@@ -57,7 +63,6 @@ const EditableBlockComponent: React.FC<Props> = ({
 
         range.setStart(textNode, safeOffset);
         range.setEnd(textNode, safeOffset);
-        
         selection?.removeAllRanges();
         selection?.addRange(range);
       } catch (e) {
@@ -81,13 +86,23 @@ const EditableBlockComponent: React.FC<Props> = ({
     const text = e.clipboardData.getData('text/plain');
     const cleanText = sanitizeContent(text);
     document.execCommand('insertText', false, cleanText);
+    
+    
     if (contentRef.current) {
-        updateBlock(block.id, contentRef.current.innerHTML);
+        const html = contentRef.current.innerHTML;
+        updateBlock(block.id, html);
+        setLocalEmpty(html === '' || html === '<br>');
     }
   };
 
   const handleInput = (e: React.FormEvent<HTMLElement>) => {
     const newHtml = e.currentTarget.innerHTML;
+    const textContent = e.currentTarget.textContent || '';
+    
+    
+    const isEmptyNow = newHtml === '<br>' || textContent.trim() === '';
+    setLocalEmpty(isEmptyNow);
+
     if (newHtml !== block.content) {
       updateBlock(block.id, newHtml);
     }
@@ -115,16 +130,14 @@ const EditableBlockComponent: React.FC<Props> = ({
       if (isAtStart) {
         e.preventDefault();
         deleteBlock(block.id);
-      } else if (!block.content || block.content === '<br>') {
+      } else if (localEmpty) { 
         e.preventDefault();
         deleteBlock(block.id);
       }
     }
 
-    
     if (e.key === 'ArrowUp') {
       const selection = window.getSelection();
-      
       if (selection?.anchorOffset === 0) {
         e.preventDefault();
         onNavigate(block.id, 'up');
@@ -134,7 +147,6 @@ const EditableBlockComponent: React.FC<Props> = ({
     if (e.key === 'ArrowDown') {
       const selection = window.getSelection();
       const textLength = contentRef.current?.textContent?.length || 0;
-     
       if (selection?.anchorOffset === textLength) {
         e.preventDefault();
         onNavigate(block.id, 'down');
@@ -150,12 +162,21 @@ const EditableBlockComponent: React.FC<Props> = ({
     }, 0);
   };
 
-  const isEmpty = !block.content 
-    || block.content === '<br>' 
-    || block.content.trim() === '';
+  const isHeading = block.type.startsWith('heading');
+  const ariaRole = isHeading ? undefined : 'textbox';
 
   return (
-    <div className="relative group"> 
+    <div className="relative group">
+      <style>{`
+        .is-empty::before {
+          content: attr(data-placeholder);
+          color: #9ca3af;
+          position: absolute;
+          pointer-events: none;
+          opacity: 1;
+        }
+      `}</style>
+
       <Component
         innerRef={contentRef} 
         block={block}
@@ -166,21 +187,25 @@ const EditableBlockComponent: React.FC<Props> = ({
         
         contentEditable
         suppressContentEditableWarning
-        role="textbox"
         
-        className={`outline-none rounded px-1 transition-colors relative ${plugin.baseStyles || ''} 
-          ${isEmpty ? 'is-empty' : ''}
+        role={ariaRole}
+        aria-label={`${block.type.replace('-', ' ')} block`}
 
-          [&.is-empty]:before:content-[attr(data-placeholder)] 
-          [&.is-empty]:before:text-gray-300 
-          [&.is-empty]:before:absolute 
-          [&.is-empty]:before:top-0
-          [&.is-empty]:before:left-1
-          [&.is-empty]:before:pointer-events-none
-          [&.is-empty]:before:select-none
+        
+        className={`outline-none rounded px-1 transition-colors relative 
+          ${plugin.baseStyles || ''} 
+          ${localEmpty ? 'is-empty' : ''}
         `}
+        
         data-placeholder={isFocused ? "Type '/' for commands" : "Type something..."}
+        
+        style={{ 
+          minHeight: '1.5em',
+          outline: 'none',
+          border: 'none'
+        }}
       />
+
       {showMenu && (
         <SlashMenu onSelect={onMenuSelect} close={() => setShowMenu(false)} />
       )}

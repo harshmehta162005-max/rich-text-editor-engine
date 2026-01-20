@@ -15,23 +15,27 @@ export const DraggableBlockWrapper: React.FC<Props> = ({ blockId, index, childre
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`group flex items-start gap-2 mb-2 relative -ml-8 pr-4 ${
-            snapshot.isDragging ? 'opacity-50 bg-white shadow-lg rounded-lg pointer-events-none' : ''
-          }`}
+          className={`group flex items-start gap-2 mb-2 relative -ml-8 px-2 rounded
+            ${snapshot.isDragging ? 'bg-blue-50 opacity-90 shadow-lg z-50' : ''}
+          `}
         >
           
           <div
             {...provided.dragHandleProps}
-            className="mt-1.5 p-1 rounded hover:bg-gray-200 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
-            contentEditable={false} // Critical: prevents cursor from entering handle
-          >
             
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#9CA3AF">
-              <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM18 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM18 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM18 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+            aria-label="Drag to move block" 
+            role="button"
+            tabIndex={0} 
+            
+            className="mt-1.5 p-1 rounded hover:bg-gray-100 cursor-grab active:cursor-grabbing text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity"
+            contentEditable={false}
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M8 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8-16a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
             </svg>
           </div>
 
-          
+         
           <div className="flex-1 min-w-0">
             {children}
           </div>

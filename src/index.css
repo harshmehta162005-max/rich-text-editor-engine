@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.is-empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af; /* Gray text */
+  position: absolute;
+  top: 0;
+  left: 4px;
+  pointer-events: none;
+  user-select: none;
+  font-style: normal;
+  display: block; /* Ensure it takes up space */
+}
+
+.is-empty {
+  min-height: 1.5em; 
+}
