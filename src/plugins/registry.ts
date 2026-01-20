@@ -1,4 +1,4 @@
-// src/plugins/registry.ts
+
 import type { BlockPlugin } from './types';
 
 class PluginRegistry {

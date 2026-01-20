@@ -1,9 +1,8 @@
-// src/hooks/useEditor.ts
+
 import { useEffect, useState, useRef } from 'react';
 import { EditorEngine, INITIAL_STATE } from '../engine/core';
 import type { EditorState } from '../engine/types';
 import { saveContent, loadContent } from '../core/utils/storage';
-// Import the Ghost
 import { GhostUser } from '../simulation/ghost';
 
 export function useEditor() {
@@ -12,30 +11,34 @@ export function useEditor() {
   ));
   const engine = engineRef.current;
   const [editorState, setEditorState] = useState<EditorState>(engine.getState());
+  
+  
+  const [isCollabActive, setIsCollabActive] = useState(false);
 
   useEffect(() => {
     const unsubscribe = engine.subscribe((newState) => {
       setEditorState(newState);
       saveContent(newState);
     });
+    return () => unsubscribe();
+  }, [engine]);
 
-    // SIMULATION START
-    // Create a fake user named "Alice"
+  
+  useEffect(() => {
+    if (!isCollabActive) return;
+
     const ghost = new GhostUser(engine, 'Alice', '#ff0000');
-    // Start her after 2 seconds
-    const timer = setTimeout(() => {
-       ghost.start(); 
-    }, 2000);
+    ghost.start();
 
     return () => {
-      unsubscribe();
-      ghost.stop(); // Cleanup
-      clearTimeout(timer);
+      ghost.stop();
     };
-  }, [engine]);
+  }, [engine, isCollabActive]);
 
   return {
     editorState,
     engine,
+    isCollabActive,
+    toggleCollab: () => setIsCollabActive(prev => !prev)
   };
 }

@@ -1,4 +1,4 @@
-// src/utils/storage.ts
+
 import type { EditorState } from '../../engine/types';
 
 const STORAGE_KEY = 'rich-editor-content';
@@ -7,7 +7,7 @@ export const saveContent = (state: EditorState): void => {
   try {
     const json = JSON.stringify(state);
     localStorage.setItem(STORAGE_KEY, json);
-    console.log('Saved to local storage'); // Optional debug log
+    console.log('Saved to local storage'); 
   } catch (error) {
     console.error('Failed to save content:', error);
   }

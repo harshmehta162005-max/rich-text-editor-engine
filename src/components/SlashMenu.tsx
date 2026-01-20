@@ -1,7 +1,7 @@
-// src/components/SlashMenu.tsx
+
 import React, { useEffect, useState } from 'react';
 import type { BlockType } from '../engine/types';
-import { registry } from '../plugins/registry'; // Import Registry
+import { registry } from '../plugins/registry'; 
 
 interface Props {
   onSelect: (type: BlockType) => void;
@@ -11,7 +11,6 @@ interface Props {
 export const SlashMenu: React.FC<Props> = ({ onSelect, close }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   
-  // DYNAMIC OPTIONS: Get all registered plugins
   const options = registry.getAll().map(plugin => ({
     label: plugin.label,
     type: plugin.type as BlockType,
@@ -42,8 +41,8 @@ export const SlashMenu: React.FC<Props> = ({ onSelect, close }) => {
   }, [selectedIndex, onSelect, close, options]);
 
   return (
-    <div className="absolute top-8 left-0 z-50 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 animate-in fade-in zoom-in-95 duration-100">
-      <div className="text-xs font-semibold text-gray-500 px-3 py-1 mb-1 uppercase tracking-wider">
+    <div className="absolute top-8 left-0 z-50 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 animate-in fade-in zoom-in-95 duration-100 overflow-hidden">
+      <div className="text-xs font-semibold text-gray-500 px-3 py-1 mb-1 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
         Basic Blocks
       </div>
       {options.map((item, index) => (
@@ -53,10 +52,19 @@ export const SlashMenu: React.FC<Props> = ({ onSelect, close }) => {
             e.preventDefault();
             onSelect(item.type);
           }}
-          className={`cursor-pointer w-full text-left px-3 py-2 flex items-center gap-2 transition-colors
-            ${index === selectedIndex ? 'bg-blue-50 text-blue-800' : 'text-gray-700 hover:bg-gray-100'}
+          
+          className={`cursor-pointer w-full text-left px-3 py-3 flex items-center gap-2 transition-colors border-b border-gray-100 last:border-0
+            ${index === selectedIndex ? 'bg-blue-50 text-blue-800' : 'text-gray-700 hover:bg-gray-50'}
           `}
         >
+          
+          <div className={`w-8 h-8 flex items-center justify-center rounded border 
+            ${index === selectedIndex ? 'bg-white border-blue-200' : 'bg-gray-50 border-gray-200'}
+          `}>
+             
+             <span className="text-xs font-bold uppercase text-gray-500">{item.label[0]}</span>
+          </div>
+
           <div className="flex-1">
             <div className="text-sm font-medium">{item.label}</div>
             <div className="text-xs text-gray-400">{item.desc}</div>

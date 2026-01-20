@@ -1,4 +1,4 @@
-// src/plugins/basics.tsx
+
 import React from 'react';
 import type { BlockPlugin } from './types';
 
