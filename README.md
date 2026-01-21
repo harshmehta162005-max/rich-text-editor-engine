@@ -1,73 +1,100 @@
-# React + TypeScript + Vite
+# Custom Rich Text Editor Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **fully custom rich text editor engine** built from scratch using **React 18**, **TypeScript (strict mode)**, and **Tailwind CSS**.
 
-Currently, two official plugins are available:
+This is **not** a wrapper around any existing editor framework.  
+All document modeling, editing logic, collaboration, plugins, and accessibility are implemented manually.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🔗 Live Links
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Artifact | Link |
+|--------|------|
+| Live Editor Demo | https://rich-text-editor-engineee.vercel.app/ |
+| Public Storybook | https://rich-text-engine-storybook.vercel.app/ |
+| Accessibility Report | `./ACCESSIBILITY.md` |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🎯 Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Block & inline formatting (headings, lists, code, links)
+- Slash menu (`/`) and markdown shortcuts
+- Keyboard-first editing (no mouse-only actions)
+- Semantic HTML output (no `div` / `span` soup)
+- Sanitized paste handling (HTML / Markdown)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🏗 Architecture
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Document stored as a **structured JSON tree**
+- Editing performed via **immutable operations**
+- Deterministic normalization and invariants
+- Controlled block rendering (no contentEditable soup)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🤝 Collaboration (Simulation)
+
+- Custom operation-based convergence model
+- Deterministic state across simulated clients
+- No data loss
+- Per-user undo / redo that preserves remote edits
+
+📘 Demonstrated in Storybook.
+
+---
+
+## 🧩 Plugin System
+
+Extensible plugin registry for:
+- block types
+- commands
+- toolbars
+- slash menu entries
+- keyboard shortcuts
+
+New functionality can be added **without modifying core engine code**.
+
+---
+
+## 🧼 Paste Sanitization
+
+- Removes unsafe tags (`script`, `iframe`)
+- Strips dangerous attributes (`on*`)
+- Normalizes content into editor schema
+- Prevents XSS and document corruption
+
+---
+
+## ♿ Accessibility
+
+- Keyboard-only UX supported everywhere
+- Correct ARIA roles for editor, menus, and toolbars
+- Semantic HTML output
+- Tested using `axe-core` and Storybook a11y addon
+
+---
+
+## 📘 Storybook
+
+Public Storybook includes:
+- collaboration convergence
+- paste sanitization
+- keyboard-only usage
+- failure recovery
+- high-contrast mode
+
+---
+
+## ⚙️ Local Development
+
+```bash
+git clone https://github.com/harshmehta162005-max/rich-text-editor-engine.git
+cd rich-text-editor-engine
+
+npm install
+npm run dev
+npm run storybook
